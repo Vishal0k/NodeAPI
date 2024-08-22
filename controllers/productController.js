@@ -92,4 +92,29 @@ const getProductsByCategory = async (req, res) => {
     }
 };
 
-export { getProduct, getProductById, getProductsByCategory };
+const getProductsByPriceRange = async (req, res) => {
+    try {
+        const min = parseFloat(req.query.min);
+        const max = parseFloat(req.query.max);
+
+        if (isNaN(min) || isNaN(max)) {
+            return res.status(400).json({ error: 'Invalid price range' });
+        }
+
+        const selectQuery = 'SELECT * FROM products WHERE price >= $1 AND price <= $2';
+        const result = await pool.query(selectQuery, [min, max]);
+
+        if (result.rowCount > 0) {
+            return res.status(200).json(result.rows);
+        } else {
+            return res.status(404).json({ error: 'No products found for the given price range' });
+        }
+    } catch (error) {
+        console.log("Error Caught: " + error.message);
+        return res.status(500).json({ error: 'Internal Server Error' });
+    }
+};
+
+
+
+export { getProduct, getProductById, getProductsByCategory, getProductsByPriceRange };
