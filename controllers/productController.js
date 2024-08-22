@@ -115,6 +115,69 @@ const getProductsByPriceRange = async (req, res) => {
     }
 };
 
+// const createNewProduct = async (req, res) => {
+//     try {
+//         const newProduct = req.body;
+
+//         // Validate Input
+//         if (!newProduct.product_name || !newProduct.price || !newProduct.category || !newProduct.star_rating || !newProduct.description || !newProduct.product_code || !newProduct.imageurl) {
+//             return res.status(400).json({ error: 'All Fields are required' });
+//         }
+
+//         const insertQuery = `INSERT into practice.products(product_name, price, category, star_rating, description, product_code, imageurl) values('${newProduct.product_name}', '${newProduct.price}', '${newProduct.category}',  '${newProduct.star_rating}', '${newProduct.description}', '${newProduct.product_code}', '${newProduct.imageurl}');`
+
+//         const result = await pool.query(insertQuery, [
+//             newProduct.product_name,
+//             newProduct.price,
+//             newProduct.category,
+//             newProduct.star_rating,
+//             newProduct.description,
+//             newProduct.product_code,
+//             newProduct.imageurl
+//         ]);
+
+//         return res.status(201).send({ message: 'Product Created Successfully' });
+//     } catch (error) {
+//         console.error("Error Caught: " + error.message);
+//         return res.status(500).json({ error: `Internal Server Error ${error.message}` });
+//     }
+// };
+
+const createNewProduct = async (req, res) => {
+    try {
+        const newProduct = req.body;
+
+        // Validate Input
+        if (!newProduct.product_name || !newProduct.price || !newProduct.category || !newProduct.star_rating || !newProduct.description || !newProduct.product_code || !newProduct.imageurl) {
+            return res.status(400).json({ error: 'All fields are required' });
+        }
+
+        // Use parameterized query
+        const insertQuery = `
+            INSERT INTO products (product_name, price, category, star_rating, description, product_code, imageurl)
+            VALUES ($1, $2, $3, $4, $5, $6, $7)
+        `;
+        const values = [
+            newProduct.product_name,
+            newProduct.price,
+            newProduct.category,
+            newProduct.star_rating,
+            newProduct.description,
+            newProduct.product_code,
+            newProduct.imageurl
+        ];
+
+        const result = await pool.query(insertQuery, values);
+
+        return res.status(201).send({ message: 'Product Created Successfully' });
+    } catch (error) {
+        console.error("Error Caught: " + error.message);
+        return res.status(500).json({ error: `Internal Server Error: ${error.message}` });
+    }
+};
 
 
-export { getProduct, getProductById, getProductsByCategory, getProductsByPriceRange };
+
+
+
+export { getProduct, getProductById, getProductsByCategory, getProductsByPriceRange, createNewProduct };
