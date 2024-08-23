@@ -1,12 +1,15 @@
 import express from 'express';  
-import { createNewProduct, getProduct, getProductById, getProductsByCategory, getProductsByPriceRange } from "../controllers/productController.js"
+import { createNewProduct, deleteProductById, getProduct, getProductById, getProductsByCategory, getProductsByPriceRange, updateProductStarRating } from "../controllers/productController.js";
+import authenticateToken from '../middlewares/authMiddleware.js';
 
-const productsRouter = express.Router()
-productsRouter.get('/', getProduct)
+const productsRouter = express.Router();
+
+productsRouter.get('/', getProduct);
 productsRouter.get('/category', getProductsByCategory);
-productsRouter.get('/priceRange', getProductsByPriceRange)
-productsRouter.post('/', createNewProduct)
-productsRouter.get('/:id', getProductById)
+productsRouter.get('/priceRange', getProductsByPriceRange);
+productsRouter.post('/', createNewProduct);
+productsRouter.put('/:id', authenticateToken, updateProductStarRating);
+productsRouter.delete('/:id', authenticateToken, deleteProductById);
+productsRouter.get('/:id', getProductById);
 
-
-export { productsRouter }
+export { productsRouter };
